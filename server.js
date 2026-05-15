@@ -24,9 +24,19 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// CORS Configuration
+const allowedOrigins =
+	process.env.FRONTEND_URL ?
+		[process.env.FRONTEND_URL]
+	:	['http://localhost:3000', 'http://localhost:5173'];
+
 const corsOptions = {
-	origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'http://localhost:5173'],
+	origin: function (origin, callback) {
+		if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+			callback(null, true);
+		} else {
+			callback(new Error('Bloqué par la politique CORS de Production'));
+		}
+	},
 	credentials: true,
 };
 
@@ -67,46 +77,59 @@ app.use((err, req, res, next) => {
 });
 /* eslint-enable no-unused-vars */
 
-// Sync database and load default data if none exist
-await sequelize.sync();
+// 2. INITIALISATION of the database
 
-const productCount = await Product.count();
-if (productCount === 0) {
-	const timestamp = Date.now();
+async function initializeDatabase() {
+	try {
+		await sequelize.sync();
 
-	const productsWithTimestamps = defaultProducts.map((product, index) => ({
-		...product,
-		createdAt: new Date(timestamp + index),
-		updatedAt: new Date(timestamp + index),
-	}));
+		const productCount = await Product.count();
+		if (productCount === 0) {
+			const timestamp = Date.now();
 
-	const deliveryOptionsWithTimestamps = defaultDeliveryOptions.map((option, index) => ({
-		...option,
-		createdAt: new Date(timestamp + index),
-		updatedAt: new Date(timestamp + index),
-	}));
+			const productsWithTimestamps = defaultProducts.map((product, index) => ({
+				...product,
+				createdAt: new Date(timestamp + index),
+				updatedAt: new Date(timestamp + index),
+			}));
 
-	const cartItemsWithTimestamps = defaultCart.map((item, index) => ({
-		...item,
-		createdAt: new Date(timestamp + index),
-		updatedAt: new Date(timestamp + index),
-	}));
+			const deliveryOptionsWithTimestamps = defaultDeliveryOptions.map((option, index) => ({
+				...option,
+				createdAt: new Date(timestamp + index),
+				updatedAt: new Date(timestamp + index),
+			}));
 
-	const ordersWithTimestamps = defaultOrders.map((order, index) => ({
-		...order,
-		createdAt: new Date(timestamp + index),
-		updatedAt: new Date(timestamp + index),
-	}));
+			const cartItemsWithTimestamps = defaultCart.map((item, index) => ({
+				...item,
+				createdAt: new Date(timestamp + index),
+				updatedAt: new Date(timestamp + index),
+			}));
 
-	await Product.bulkCreate(productsWithTimestamps);
-	await DeliveryOption.bulkCreate(deliveryOptionsWithTimestamps);
-	await CartItem.bulkCreate(cartItemsWithTimestamps);
-	await Order.bulkCreate(ordersWithTimestamps);
+			const ordersWithTimestamps = defaultOrders.map((order, index) => ({
+				...order,
+				createdAt: new Date(timestamp + index),
+				updatedAt: new Date(timestamp + index),
+			}));
 
-	console.log('Default data added to the database.');
+			await Product.bulkCreate(productsWithTimestamps);
+			await DeliveryOption.bulkCreate(deliveryOptionsWithTimestamps);
+			await CartItem.bulkCreate(cartItemsWithTimestamps);
+			await Order.bulkCreate(ordersWithTimestamps);
+
+			console.log('Default data added to the database.');
+		}
+	} catch (error) {
+		console.error("Erreur lors de l'initialisation de la base de données :", error);
+	}
 }
 
-// Start server
-app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
-});
+// initialisation start
+initializeDatabase();
+
+if (process.env.NODE_ENV !== 'production') {
+	app.listen(PORT, () => {
+		console.log(`Server is running on port ${PORT}`);
+	});
+}
+
+export default app;

@@ -31,13 +31,14 @@ const allowedOrigins =
 
 const corsOptions = {
 	origin: function (origin, callback) {
-		if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+		if (!origin || allowedOrigins.includes(origin)) {
 			callback(null, true);
 		} else {
-			callback(new Error('Bloqué par la politique CORS de Production'));
+			callback(new Error('Bloqué par la politique CORS en production'));
 		}
 	},
 	credentials: true,
+	optionsSuccessStatus: 200,
 };
 
 // Middleware

@@ -1,8 +1,8 @@
 ## Intro to the Project
 
-This is the backend for the [ecommerce-project](https://github.com/SuperSimpleDev/ecommerce-project).
+This is the backend for the [ecommerce-project](https://github.com/Franke1nstein/BiznDS).
 
-- 95% of the code was generated with AI.
+Most part of the code was generated with AI.
 
 ## Set up this backend
 

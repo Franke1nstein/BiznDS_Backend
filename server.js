@@ -24,17 +24,18 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const allowedOrigins =
-	process.env.FRONTEND_URL ?
-		[process.env.FRONTEND_URL]
-	:	['http://localhost:3000', 'http://localhost:5173'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
+
+if (process.env.FRONTEND_URL) {
+	allowedOrigins.push(process.env.FRONTEND_URL);
+}
 
 const corsOptions = {
 	origin: function (origin, callback) {
 		if (!origin || allowedOrigins.includes(origin)) {
 			callback(null, true);
 		} else {
-			callback(new Error('Bloqué par la politique CORS en production'));
+			callback(new Error('Non autorisé par CORS'));
 		}
 	},
 	credentials: true,

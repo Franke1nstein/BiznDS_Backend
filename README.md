@@ -42,53 +42,6 @@ cd E_Commerce_Backend
 npm install
 ```
 
-### Configuration
-
-Create a `.env` file in the root directory with the appropriate configuration:
-
-```bash
-# Environment
-NODE_ENV=production
-PORT=3000
-
-# Frontend URL for CORS
-FRONTEND_URL=http://localhost:5173
-
-# Choose ONE database option:
-
-# Option 1: PostgreSQL (Supabase, Vercel Postgres, etc.)
-DATABASE_URL=postgresql://user:password@host:5432/dbname
-
-# Option 2: MySQL (AWS RDS, etc.)
-RDS_HOSTNAME=your-host.rds.amazonaws.com
-RDS_PORT=3306
-RDS_DB_NAME=your_database
-RDS_USERNAME=admin
-RDS_PASSWORD=your_password
-DB_TYPE=mysql
-
-# Option 3: SQLite (local development)
-# No additional configuration needed
-```
-
-See `.env.example` for all available options.
-
-### Development
-
-```bash
-# Start development server with auto-reload
-npm run dev
-
-# Server runs on http://localhost:3000
-```
-
-### Production
-
-```bash
-# Start production server
-npm start
-```
-
 ## API Endpoints
 
 ### Products
@@ -161,18 +114,6 @@ src/
 └── server.js         # Main server file
 ```
 
-## Deployment
-
-### Vercel Deployment
-
-1. Push code to GitHub
-2. Connect repository to Vercel
-3. Select `E_Commerce_Backend` as root directory
-4. Add environment variables (see Configuration)
-5. Deploy automatically on every push
-
-See [DEPLOYMENT.md](../DEPLOYMENT.md) for detailed instructions for multiple platforms (Heroku, AWS, DigitalOcean, etc.)
-
 ## Security
 
 - ✅ JWT-based authentication
@@ -190,24 +131,6 @@ See [DEPLOYMENT.md](../DEPLOYMENT.md) for detailed instructions for multiple pla
 - Pagination for large datasets
 - Compression middleware
 
-## Testing
-
-```bash
-# Run tests (if configured)
-npm run test
-```
-
-## Scripts
-
-- `npm start` - Start production server
-- `npm run dev` - Start development server with nodemon
-- `npm run lint` - Run ESLint
-- `npm run zip` - Create deployment package
-
-## Environment Variables Reference
-
-See `.env.example` for a complete template with descriptions of all available environment variables.
-
 ## Troubleshooting
 
 ### Database Connection Issues
@@ -216,34 +139,3 @@ See `.env.example` for a complete template with descriptions of all available en
 - Check RDS/server is running and accessible
 - Verify security groups/firewall rules
 - Check credentials are correct
-
-### CORS Errors
-
-- Verify `FRONTEND_URL` environment variable
-- Ensure it includes protocol (http/https)
-- No trailing slashes
-
-### Port Already in Use
-
-- Change PORT environment variable
-- Or kill process: `lsof -i :3000` (Mac/Linux)
-
-## Contributing
-
-1. Create a feature branch
-2. Follow ESLint rules
-3. Commit changes with clear messages
-4. Push to branch
-5. Open a pull request
-
-## API Documentation
-
-Detailed API documentation available in `documentation.md`
-
-## License
-
-ISC
-
-## Support
-
-For issues and questions, refer to the API documentation or create an issue on GitHub.

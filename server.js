@@ -20,14 +20,14 @@ import { defaultOrders } from './defaultData/defaultOrders.js';
 import fs from 'fs';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = import.meta.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
 
-if (process.env.FRONTEND_URL) {
-	allowedOrigins.push(process.env.FRONTEND_URL);
+if (import.meta.env.FRONTEND_URL) {
+	allowedOrigins.push(import.meta.env.FRONTEND_URL);
 }
 
 const corsOptions = {
@@ -128,7 +128,7 @@ async function initializeDatabase() {
 // initialisation start
 initializeDatabase();
 
-if (process.env.NODE_ENV !== 'production') {
+if (import.meta.env.NODE_ENV !== 'production') {
 	app.listen(PORT, () => {
 		console.log(`Server is running on port ${PORT}`);
 	});

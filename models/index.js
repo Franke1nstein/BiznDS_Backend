@@ -6,9 +6,10 @@ import { initOrder } from './Order.js';
 import { initCartItem } from './CartItem.js';
 
 // Check for different connection methods
-const hasDatabaseUrl = !!process.env.DATABASE_URL;
-const isUsingRDS = process.env.RDS_HOSTNAME && process.env.RDS_USERNAME && process.env.RDS_PASSWORD;
-const dbType = process.env.DB_TYPE || 'mysql';
+const hasDatabaseUrl = !!import.meta.env.DATABASE_URL;
+const isUsingRDS =
+	import.meta.env.RDS_HOSTNAME && import.meta.env.RDS_USERNAME && import.meta.env.RDS_PASSWORD;
+const dbType = import.meta.env.DB_TYPE || 'mysql';
 const defaultPorts = {
 	mysql: 3306,
 	postgres: 5432,
@@ -19,7 +20,7 @@ export let sequelize;
 
 // Priority 1: DATABASE_URL (Supabase, Vercel, Heroku style)
 if (hasDatabaseUrl) {
-	sequelize = new Sequelize(process.env.DATABASE_URL, {
+	sequelize = new Sequelize(import.meta.env.DATABASE_URL, {
 		dialect: 'postgres',
 		logging: false,
 		pool: {
@@ -33,11 +34,11 @@ if (hasDatabaseUrl) {
 // Priority 2: RDS style env vars
 else if (isUsingRDS) {
 	sequelize = new Sequelize({
-		database: process.env.RDS_DB_NAME,
-		username: process.env.RDS_USERNAME,
-		password: process.env.RDS_PASSWORD,
-		host: process.env.RDS_HOSTNAME,
-		port: process.env.RDS_PORT || defaultPort,
+		database: import.meta.env.RDS_DB_NAME,
+		username: import.meta.env.RDS_USERNAME,
+		password: import.meta.env.RDS_PASSWORD,
+		host: import.meta.env.RDS_HOSTNAME,
+		port: import.meta.env.RDS_PORT || defaultPort,
 		dialect: dbType,
 		logging: false,
 	});

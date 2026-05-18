@@ -25,6 +25,7 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// --- CORS CONFIGURATION ---
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
 
 if (process.env.FRONTEND_URL) {
@@ -36,7 +37,7 @@ const corsOptions = {
 		if (!origin || allowedOrigins.includes(origin)) {
 			callback(null, true);
 		} else {
-			callback(null, false);
+			callback(new Error('Not allowed by CORS'));
 		}
 	},
 	credentials: true,
@@ -47,9 +48,19 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
+// --- Dir path secure ---
 
-// routes API
+const imagesPath = path.join(__dirname, 'images');
+if (fs.existsSync(imagesPath)) {
+	app.use('/images', express.static(imagesPath));
+}
+
+const distPath = path.join(__dirname, 'dist');
+if (fs.existsSync(distPath)) {
+	app.use(express.static(distPath));
+}
+
+// Routes API
 app.use('/api/products', productRoutes);
 app.use('/api/delivery-options', deliveryOptionRoutes);
 app.use('/api/cart-items', cartItemRoutes);
@@ -58,24 +69,24 @@ app.use('/api/reset', resetRoutes);
 app.use('/api/payment-summary', paymentSummaryRoutes);
 app.use('/api/auth', authRoutes);
 
-app.use(express.static(path.join(__dirname, 'dist')));
-
 app.get('*', (req, res) => {
 	const indexPath = path.join(__dirname, 'dist', 'index.html');
 	if (fs.existsSync(indexPath)) {
 		res.sendFile(indexPath);
 	} else {
-		res.status(404).send('index.html not found');
+		res.status(404).json({ message: 'API Backend operate. Route not found.' });
 	}
 });
 
+// Middleware for erro handling
 /* eslint-disable no-unused-vars */
 app.use((err, req, res, next) => {
-	console.error(err.stack);
+	console.error('Erreur serveur capturée :', err.stack);
 	res.status(500).json({ error: 'Something went wrong!' });
 });
 /* eslint-enable no-unused-vars */
 
+// --- database initialisation ---
 async function initializeDatabase() {
 	try {
 		await sequelize.sync();
@@ -116,11 +127,11 @@ async function initializeDatabase() {
 			console.log('Default data added to the database.');
 		}
 	} catch (error) {
-		console.error('error when initializing database :', error);
+		console.error('error when initializing database :', error.message);
 	}
 }
 
-initializeDatabase();
+initializeDatabase().catch((err) => console.error('Database initialization failed:', err));
 
 if (process.env.NODE_ENV !== 'production') {
 	app.listen(PORT, () => {

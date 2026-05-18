@@ -1,5 +1,6 @@
 {
 	"name": "ecommerce-backend",
+	"description": "E-Commerce Backend API built with Express.js and Sequelize",
 	"version": "1.0.0",
 	"main": "server.js",
 	"type": "module",
@@ -10,10 +11,14 @@
 		"zip": "node zipFiles.js",
 		"postinstall": "patch-package"
 	},
-	"keywords": [],
+	"keywords": [
+		"ecommerce",
+		"api",
+		"express",
+		"sequelize"
+	],
 	"author": "",
 	"license": "ISC",
-	"description": "",
 	"dependencies": {
 		"bcryptjs": "^2.4.3",
 		"cors": "^2.8.5",

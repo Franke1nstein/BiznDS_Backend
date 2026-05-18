@@ -32,15 +32,17 @@ if (process.env.FRONTEND_URL) {
 	allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
+// --- CONFIGURATION CORS ---
+
 const corsOptions = {
 	origin: function (origin, callback) {
-		if (!origin || allowedOrigins.includes(origin)) {
-			callback(null, true);
-		} else {
-			callback(new Error('Not allowed by CORS'));
-		}
+		callback(null, true);
 	},
+
+	allowedHeaders: ['Content-Type', 'Authorization'],
+
 	credentials: true,
+
 	optionsSuccessStatus: 200,
 };
 

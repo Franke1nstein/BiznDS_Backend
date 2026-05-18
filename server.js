@@ -20,14 +20,15 @@ import { defaultOrders } from './defaultData/defaultOrders.js';
 import fs from 'fs';
 
 const app = express();
-const PORT = import.meta.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
 
-if (import.meta.env.FRONTEND_URL) {
-	allowedOrigins.push(import.meta.env.FRONTEND_URL);
+if (process.env.FRONTEND_URL) {
+	allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
 const corsOptions = {
@@ -35,21 +36,20 @@ const corsOptions = {
 		if (!origin || allowedOrigins.includes(origin)) {
 			callback(null, true);
 		} else {
-			callback(new Error('Non autorisé par CORS'));
+			callback(new Error('No autorised by CORS'));
 		}
 	},
 	credentials: true,
 	optionsSuccessStatus: 200,
 };
 
-// Middleware
+// Middlewares
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Serve images from the images folder
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-// Use routes
+// routes API
 app.use('/api/products', productRoutes);
 app.use('/api/delivery-options', deliveryOptionRoutes);
 app.use('/api/cart-items', cartItemRoutes);
@@ -58,10 +58,8 @@ app.use('/api/reset', resetRoutes);
 app.use('/api/payment-summary', paymentSummaryRoutes);
 app.use('/api/auth', authRoutes);
 
-// Serve static files from the dist folder
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Catch-all route to serve index.html for any unmatched routes
 app.get('*', (req, res) => {
 	const indexPath = path.join(__dirname, 'dist', 'index.html');
 	if (fs.existsSync(indexPath)) {
@@ -71,15 +69,12 @@ app.get('*', (req, res) => {
 	}
 });
 
-// Error handling middleware
 /* eslint-disable no-unused-vars */
 app.use((err, req, res, next) => {
 	console.error(err.stack);
 	res.status(500).json({ error: 'Something went wrong!' });
 });
 /* eslint-enable no-unused-vars */
-
-// 2. INITIALISATION of the database
 
 async function initializeDatabase() {
 	try {
@@ -121,14 +116,13 @@ async function initializeDatabase() {
 			console.log('Default data added to the database.');
 		}
 	} catch (error) {
-		console.error("Erreur lors de l'initialisation de la base de données :", error);
+		console.error('error when initializing database :', error);
 	}
 }
 
-// initialisation start
 initializeDatabase();
 
-if (import.meta.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
 	app.listen(PORT, () => {
 		console.log(`Server is running on port ${PORT}`);
 	});

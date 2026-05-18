@@ -1,32 +1,37 @@
 import express from 'express';
 import { Product } from '../models/Product.js';
+import { Op } from 'sequelize';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-	const search = req.query.search;
+	try {
+		const search = req.query.search;
+		let queryOptions = {};
 
-	let products;
-	if (search) {
-		products = await Product.findAll();
+		if (search) {
+			const searchPattern = `%${search}%`;
 
-		// Filter products by case-insensitive search on name or keywords
-		const lowerCaseSearch = search.toLowerCase();
+			queryOptions.where = {
+				[Op.or]: [
+					{ name: { [Op.iLike]: searchPattern } },
+					{ keywords: { [Op.contains]: [search.toLowerCase()] } },
+				],
+			};
+		}
 
-		products = products.filter((product) => {
-			const nameMatch = product.name.toLowerCase().includes(lowerCaseSearch);
+		console.log('extracting products...');
+		const products = await Product.findAll(queryOptions);
 
-			const keywordsMatch = product.keywords.some((keyword) =>
-				keyword.toLowerCase().includes(lowerCaseSearch)
-			);
+		return res.status(200).json(products);
+	} catch (error) {
+		console.error('products outes error :', error.message);
 
-			return nameMatch || keywordsMatch;
+		return res.status(500).json({
+			error: 'Failed to load products.',
+			details: error.message,
 		});
-	} else {
-		products = await Product.findAll();
 	}
-
-	res.json(products);
 });
 
 export default router;

@@ -49,7 +49,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // --- Dir path secure ---
-
 const imagesPath = path.join(__dirname, 'images');
 if (fs.existsSync(imagesPath)) {
 	app.use('/images', express.static(imagesPath));
@@ -78,7 +77,7 @@ app.get('*', (req, res) => {
 	}
 });
 
-// Middleware for erro handling
+// Middleware for error handling
 /* eslint-disable no-unused-vars */
 app.use((err, req, res, next) => {
 	console.error('Erreur serveur capturée :', err.stack);
@@ -86,7 +85,7 @@ app.use((err, req, res, next) => {
 });
 /* eslint-enable no-unused-vars */
 
-// --- database initialisation ---
+// --- DATABASE INITIALISATION ---
 async function initializeDatabase() {
 	try {
 		await sequelize.sync();
@@ -124,19 +123,23 @@ async function initializeDatabase() {
 			await CartItem.bulkCreate(cartItemsWithTimestamps);
 			await Order.bulkCreate(ordersWithTimestamps);
 
-			console.log('Default data added to the database.');
+			console.log('✨ [Database] Default data successfully added.');
 		}
 	} catch (error) {
-		console.error('error when initializing database :', error.message);
+		console.error('❌ [Database] Error during initialization :', error.message);
 	}
 }
 
-initializeDatabase().catch((err) => console.error('Database initialization failed:', err));
-
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'development') {
+	console.log(' Development mode detected. Initializing database...');
+	initializeDatabase().catch((err) => console.error('Database initialization failed:', err));
 	app.listen(PORT, () => {
 		console.log(`Server is running on port ${PORT}`);
 	});
+} else {
+	console.log(
+		`Running in ${process.env.NODE_ENV || 'production'} mode. Database initialization skipped.`
+	);
 }
 
 export default app;

@@ -6,7 +6,7 @@ import { initOrder } from './Order.js';
 import { initCartItem } from './CartItem.js';
 
 // Check for different connection methods
-const hasDatabaseUrl = !!process.env.DATABASE_URL;
+const hasDatabaseUrl = !!process.env.SUPABASE_URL;
 const isUsingRDS = process.env.RDS_HOSTNAME && process.env.RDS_USERNAME && process.env.RDS_PASSWORD;
 const dbType = process.env.DB_TYPE || 'mysql';
 const defaultPorts = {
@@ -19,7 +19,7 @@ export let sequelize;
 
 // Priority 1: DATABASE_URL (Supabase, Vercel, Heroku style)
 if (hasDatabaseUrl) {
-	sequelize = new Sequelize(process.env.DATABASE_URL, {
+	sequelize = new Sequelize(process.env.SUPABASE_URL, {
 		dialect: 'postgres',
 		logging: false,
 		pool: {

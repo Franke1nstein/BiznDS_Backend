@@ -36,7 +36,7 @@ const corsOptions = {
 		if (!origin || allowedOrigins.includes(origin)) {
 			callback(null, true);
 		} else {
-			callback(new Error('No autorised by CORS'));
+			callback(null, false);
 		}
 	},
 	credentials: true,
